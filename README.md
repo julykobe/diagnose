@@ -1,5 +1,5 @@
 # diagnose
-A tool used for check whether the client can connect your server's port.
+A tool used for checking whether the client can connect your server's port.
 It should use websocket to detect, but unfortunate, now the websocket protocal doesn't support to expose the error of the server returns, so I use flash action script to solve the problem.
 
 ###Preparation
