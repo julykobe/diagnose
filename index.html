@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+  <h1>port detect</h1>
+
+  <h2>check whether your port is blocked</h2>
+    <input id = "target_host">
+    <input id = "target_port">
+    <button id = "port_check">Check port</button>
+    <div class = "result">
+      <p id = "port_result"></p>
+    </div>
+
+  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript">
+    // config
+    WEB_SOCKET_SWF_LOCATION = "WebSocketMain.swf";
+    WEB_SOCKET_FORCE_FLASH = true;
+    WEB_SOCKET_LOGGER = null;
+    WEB_SOCKET_DEBUG = true;
+    WEB_SOCKET_DISABLE_AUTO_INITIALIZATION = false;
+    WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = false;
+
+
+    var cannot_connect_port_hint = "cannot connect to Web Socket server";
+    var cannot_connect_flash_policy_port_hint = "server is running and Flash socket policy file";
+
+    $(document).ready(function(){
+
+      // port check
+      $("#port_check").click(function(){
+
+        var host = $("#target_host").val();
+        var port = $("#target_port").val();
+
+        //wss is used to tell flash use ssl
+        var targetUrl = "wss://"+ host + ":" + port;
+        // targetUrl = "wss://localhost:80";
+
+        // optional, by default, it will use host get from targetUrl
+        WebSocket.__flash.loadManualPolicyFile("xmlsocket://"+host+":843");
+
+        var ws = new WebSocket(targetUrl);
+
+        ws.onopen = function(){
+          $("#port_result").text("No problem on connecting to the port");
+        };
+
+        ws.onclose = function(event){
+          // alert(event.wasClean + "  " + event.code + " Reason " + event.reason);
+            if (event.reason.indexOf(cannot_connect_flash_policy_port_hint) != -1){
+              var result = "Their is something error with flash policy file(maybe 843 port not open)."
+            }else if (event.reason.indexOf(cannot_connect_port_hint) != -1){
+              var result = "Cannot connect to the port, please check your network or contract to you network administrator."
+            }else{
+              var result = "No problem on connecting to the port."
+            }
+            $("#port_result").text(result);
+        };
+      });
+
+    });
+  </script>
+  <script type="text/javascript" src="js/swfobject.js"></script>
+  <script type="text/javascript" src="js/web_socket.js"></script>
+</body>
+</html>
